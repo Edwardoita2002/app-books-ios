@@ -1,12 +1,12 @@
 {
-  "project": "App-books-v01",
+  "project": "Book_history",
   "platform": "ios",
   "github": {
     "owner": "Edwardoita2002",
     "repo": "app-books-ios"
   },
   "ios": {
-    "path": "books-v01"
+    "path": "Books_history"
   },
   "flutter": {
     "watch": {}
