@@ -2,25 +2,29 @@ name: iOS Build
 
 on:
   workflow_dispatch:
+    inputs:
+      build_id:
+        description: 'Internal build ID'
+        required: false
+        default: '1'
 
 jobs:
   build:
     runs-on: macos-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      # Genera la carpeta /ios nativa en el servidor de GitHub para que no falle
+      # Genera la carpeta nativa /ios en la máquina virtual
       - name: Run Expo Prebuild (iOS)
         run: npx expo prebuild --platform ios
 
@@ -30,7 +34,7 @@ jobs:
           cd ios
           pod install
 
-      # Compila la aplicación en Xcode sin necesidad de firma de Apple
+      # Compila la aplicación usando Xcode sin firma de Apple
       - name: Build iOS App
         run: |
           cd ios
@@ -41,7 +45,7 @@ jobs:
                      clean build \
                      CODE_SIGNING_ALLOWED=NO
 
-      # Empaqueta el archivo final en un instalador .IPA
+      # Empaqueta el ejecutable .app en un archivo .ipa
       - name: Package into Unsigned IPA
         run: |
           mkdir -p build/Payload
@@ -49,7 +53,7 @@ jobs:
           cd build
           zip -r ../app-unsigned.ipa Payload
 
-      # Sube el instalador a GitHub para que lo puedas descargar en Windows
+      # Guarda el archivo para que lo descargues
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
