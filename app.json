@@ -15,14 +15,8 @@
       "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
     },
     "plugins": [
-      [
-        "react-native-pdf",
-        {
-          "android": {
-            "usesCleartextTraffic": false
-          }
-        }
-      ]
+      "@config-plugins/react-native-blob-util",
+      "@config-plugins/react-native-pdf"
     ],
     "extra": {
       "eas": {

@@ -9,6 +9,8 @@
     "prebuild": "expo prebuild"
   },
   "dependencies": {
+    "@config-plugins/react-native-blob-util": "^14.0.1",
+    "@config-plugins/react-native-pdf": "^14.0.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.11.0",
     "expo": "~51.0.0",
