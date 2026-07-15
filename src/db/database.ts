@@ -21,15 +21,12 @@ export interface BookWithProgress extends Book {
 
 let db: SQLite.SQLiteDatabase | null = null;
 
-/**
- * Abre (o crea) la base de datos local y garantiza que las tablas existan.
- * Se debe llamar una sola vez al iniciar la app.
- */
 export async function initDatabase(): Promise<void> {
   db = await SQLite.openDatabaseAsync('pdf_reader.db');
 
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
+    PRAGMA foreign_keys = ON;
 
     CREATE TABLE IF NOT EXISTS books (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,14 +47,14 @@ export async function initDatabase(): Promise<void> {
 
 function getDb(): SQLite.SQLiteDatabase {
   if (!db) {
-    throw new Error('La base de datos no ha sido inicializada. Llama a initDatabase() primero.');
+    throw new Error('La base de datos no ha sido inicializada. Llama a initDatabase() primero en tu App.tsx.');
   }
   return db;
 }
 
-/** Inserta un nuevo libro en la biblioteca local. */
 export async function addBook(title: string, fileUri: string, totalPages: number): Promise<number> {
   const database = getDb();
+  
   const result = await database.runAsync(
     'INSERT INTO books (title, fileUri, totalPages, addedAt) VALUES (?, ?, ?, ?);',
     title,
@@ -65,17 +62,17 @@ export async function addBook(title: string, fileUri: string, totalPages: number
     totalPages,
     new Date().toISOString()
   );
-  // Creamos el registro de progreso inicial en página 1
+  
   await database.runAsync(
     'INSERT INTO progress (bookId, currentPage, lastReadAt) VALUES (?, ?, ?);',
     result.lastInsertRowId,
     1,
     new Date().toISOString()
   );
+  
   return result.lastInsertRowId;
 }
 
-/** Devuelve todos los libros junto con su progreso de lectura actual. */
 export async function getAllBooks(): Promise<BookWithProgress[]> {
   const database = getDb();
   const rows = await database.getAllAsync<BookWithProgress>(`
@@ -89,7 +86,6 @@ export async function getAllBooks(): Promise<BookWithProgress[]> {
   return rows;
 }
 
-/** Obtiene un libro específico por id. */
 export async function getBookById(bookId: number): Promise<BookWithProgress | null> {
   const database = getDb();
   const row = await database.getFirstAsync<BookWithProgress>(
@@ -104,10 +100,6 @@ export async function getBookById(bookId: number): Promise<BookWithProgress | nu
   return row ?? null;
 }
 
-/**
- * Guarda el progreso de lectura de un libro (página actual).
- * Se llama cada vez que el usuario cambia de página en el lector.
- */
 export async function saveProgress(bookId: number, currentPage: number): Promise<void> {
   const database = getDb();
   await database.runAsync(
@@ -122,13 +114,17 @@ export async function saveProgress(bookId: number, currentPage: number): Promise
   );
 }
 
-/** Actualiza el número total de páginas de un libro (se conoce al abrirlo la primera vez). */
 export async function updateTotalPages(bookId: number, totalPages: number): Promise<void> {
   const database = getDb();
   await database.runAsync('UPDATE books SET totalPages = ? WHERE id = ?;', totalPages, bookId);
 }
 
-/** Elimina un libro y su progreso asociado. */
+/** ACTUALIZADO: Permite cambiar el título del libro */
+export async function updateBookTitle(bookId: number, newTitle: string): Promise<void> {
+  const database = getDb();
+  await database.runAsync('UPDATE books SET title = ? WHERE id = ?;', newTitle, bookId);
+}
+
 export async function deleteBook(bookId: number): Promise<void> {
   const database = getDb();
   await database.runAsync('DELETE FROM progress WHERE bookId = ?;', bookId);
