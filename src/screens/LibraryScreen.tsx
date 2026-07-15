@@ -91,7 +91,7 @@ export default function LibraryScreen({ navigation }: any) {
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Guardar',
-          onPress: async (newTitle) => {
+          onPress: async (newTitle?: string) => {
             if (newTitle && newTitle.trim() !== '') {
               await updateBookTitle(book.id, newTitle.trim());
               await loadBooks();
