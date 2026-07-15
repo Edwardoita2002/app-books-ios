@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Mi Lector PDF",
+    "slug": "pdf-reader-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.edwardo.pdfreaderapp"
+    },
+    "android": {
+      "package": "com.edwardo.pdfreaderapp",
+      "permissions": ["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE"]
+    },
+    "plugins": [
+      [
+        "react-native-pdf",
+        {
+          "android": {
+            "usesCleartextTraffic": false
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "49f115af-f076-4a0e-849e-5883deca2c52"
+      }
+    }
+  }
+}
