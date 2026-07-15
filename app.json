@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Mi Lector PDF",
+    "owner": "edyt800s-team",
     "slug": "pdf-reader-app",
     "version": "1.0.0",
     "orientation": "portrait",
